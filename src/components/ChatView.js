@@ -4,6 +4,7 @@ import { ChatContext } from '../context/chatContext';
 import { MdSend } from 'react-icons/md';
 import { davinci } from '../utils/davinci';
 import { dalle } from '../utils/dalle';
+import { checkApiKey } from '../utils/checkKeys';
 
 const ChatView = () => {
   const messagesEndRef = useRef();
@@ -13,6 +14,7 @@ const ChatView = () => {
   const options = ['ChatGPT', 'DALLE'];
   const [selected, setSelected] = useState(options[0]);
   const [messages, addMessage] = useContext(ChatContext);
+  const [apiKey, setApiKey] = useState();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -36,15 +38,21 @@ const ChatView = () => {
     const aiModel = selected;
 
     setLoading(true);
+    try {
+      await checkApiKey(apiKey)
+    } catch (error) {
+      setLoading(false);
+      return alert(`Invalid OpenAI key (${error})`)
+    }
     setFormValue('');
     updateMessage(formValue, false, aiModel);
     try {
       if (aiModel === options[0]) {
-        const response = await davinci(formValue);
+        const response = await davinci(formValue, apiKey);
         const data = response.data.choices[0].message.content;
         data && updateMessage(data, true, aiModel);
       } else {
-        const response = await dalle(formValue);
+        const response = await dalle(formValue, apiKey);
         const data = response.data.data[0].url;
         data && updateMessage(data, true, aiModel, formValue);
       }
@@ -80,13 +88,15 @@ const ChatView = () => {
 
         <span ref={messagesEndRef}></span>
       </div>
+      <input className='api-key' type="text" placeholder='OpenAI API key' onChange={(e) => setApiKey(e.target.value)} />
       <form onSubmit={sendMessage}>
         <select
           value={selected}
           onChange={(e) => setSelected(e.target.value)}>
-          {options.map(item => (<option>{item}</option>))}
+          {options.map(item => (<option key={item}>{item}</option>))}
         </select>
         <textarea
+          disabled={!apiKey}
           ref={inputRef}
           value={formValue}
           onKeyDown={handleKeyDown}

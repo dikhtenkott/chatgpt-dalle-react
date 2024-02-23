@@ -1,8 +1,8 @@
 import { Configuration, OpenAIApi } from 'openai';
 
-export const davinci = async (prompt) => {
+export const davinci = async (prompt, key) => {
   const configuration = new Configuration({
-    apiKey: process.env.REACT_APP_CHATGPT_API_KEY,
+    apiKey: key,
   });
 
   const openai = new OpenAIApi(configuration);

@@ -108,3 +108,11 @@ img {
   text-align: left;
   font-size: 12px;
 }
+
+.api-key {
+  margin: 16px 0;
+  border: 2px solid lightgray;
+  width: 50%;
+  border-radius: 10px;
+  padding: 8px;
+}
