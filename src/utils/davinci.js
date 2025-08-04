@@ -24,6 +24,7 @@ export const davinci = async (prompt, key) => {
     frequency_penalty: 0.5,
     presence_penalty: 0.2,
   });
-
+  console.log(typeof response)
+  console.log(response)
   return response;
 };
